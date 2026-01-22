@@ -38,6 +38,32 @@ public class ChatBot {
                 System.out.println("  " + tasks.get(index));
                 continue;
             }
+            if (input.startsWith("mark")) {
+                String[] parts = input.trim().split("\\s+"); // 按空格切
+                if (parts.length < 2) {
+                    System.out.println("Oops! Please specify which task to mark. Usage: mark <task number>");
+                    continue;
+                }
+
+                int taskNumber;
+                try {
+                    taskNumber = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Oops! Task number must be an integer. Usage: mark <task number>");
+                    continue;
+                }
+
+                int index = taskNumber - 1;
+                if (index < 0 || index >= tasks.size()) {
+                    System.out.println("Oops! That task number is out of range.");
+                    continue;
+                }
+
+                tasks.get(index).markDone();
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  " + tasks.get(index));
+                continue;
+            }
 
             if (input.equalsIgnoreCase("list")) {
                 if (tasks.isEmpty()) {
