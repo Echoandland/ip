@@ -5,3 +5,9 @@ Hello from
 | |_| | |_| |   <  __/
 |____/ \__,_|_|\_\___|
 
+Hello! I'm ChatBot
+What can I do for you?
+Added: [T] [ ] read book
+read book
+1. [T] [ ] read book
+Bye. Hope to see you again soon!
