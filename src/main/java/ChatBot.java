@@ -18,7 +18,7 @@ public class ChatBot {
                 System.out.println("Bye. Hope to see you again soon!");
                 break;
             }
-            // Echo input for now (optional)
+            System.out.println(input);
             // System.out.println(input);
         }
         scanner.close();
