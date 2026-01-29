@@ -7,6 +7,17 @@ import java.time.LocalDateTime;
  * Parses user input and returns the corresponding Command object.
  */
 public class Parser {
+    private static final int COMMAND_TODO_LENGTH = 5;
+    private static final int COMMAND_DEADLINE_LENGTH = 9;
+    private static final int COMMAND_EVENT_LENGTH = 6;
+    private static final int COMMAND_MARK_LENGTH = 5;
+    private static final int COMMAND_UNMARK_LENGTH = 7;
+    private static final int COMMAND_DELETE_LENGTH = 7;
+    private static final int MIN_PARTS_FOR_DEADLINE = 4;
+    private static final int MIN_PARTS_FOR_EVENT = 5;
+    private static final int MIN_PARTS_FOR_TASK = 3;
+    private static final int INDEX_OFFSET = 1;
+
     /**
      * Parses the user input and returns the appropriate Command.
      *
@@ -25,7 +36,7 @@ public class Parser {
         }
 
         if (trimmed.startsWith("todo ")) {
-            String desc = trimmed.substring(5).trim();
+            String desc = trimmed.substring(COMMAND_TODO_LENGTH).trim();
             if (desc.isEmpty()) {
                 return new InvalidCommand("Oops! Todo description cannot be empty.");
             }
@@ -33,7 +44,7 @@ public class Parser {
         }
 
         if (trimmed.startsWith("deadline ")) {
-            String rest = trimmed.substring(9).trim();
+            String rest = trimmed.substring(COMMAND_DEADLINE_LENGTH).trim();
             String[] parts = rest.split(" /by ", 2);
             if (parts.length < 2) {
                 return new InvalidCommand("Oops! Please use the format: deadline <description> /by <date>");
@@ -48,7 +59,7 @@ public class Parser {
         }
 
         if (trimmed.startsWith("event ")) {
-            String rest = trimmed.substring(6).trim();
+            String rest = trimmed.substring(COMMAND_EVENT_LENGTH).trim();
             String[] p1 = rest.split(" /from ", 2);
             if (p1.length < 2) {
                 return new InvalidCommand("Oops! Please use the format: event <description> /from <date-time> /to <date-time>");
@@ -69,10 +80,10 @@ public class Parser {
         }
 
         if (trimmed.startsWith("mark ")) {
-            String rest = trimmed.substring(5).trim();
+            String rest = trimmed.substring(COMMAND_MARK_LENGTH).trim();
             try {
                 int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - 1;
+                int index = taskNumber - INDEX_OFFSET;
                 return new MarkCommand(index);
             } catch (NumberFormatException e) {
                 return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
@@ -86,7 +97,7 @@ public class Parser {
             }
             try {
                 int taskNumber = Integer.parseInt(parts[1]);
-                int index = taskNumber - 1;
+                int index = taskNumber - INDEX_OFFSET;
                 return new MarkCommand(index);
             } catch (NumberFormatException e) {
                 return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
@@ -94,10 +105,10 @@ public class Parser {
         }
 
         if (trimmed.startsWith("unmark ")) {
-            String rest = trimmed.substring(7).trim();
+            String rest = trimmed.substring(COMMAND_UNMARK_LENGTH).trim();
             try {
                 int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - 1;
+                int index = taskNumber - INDEX_OFFSET;
                 return new UnmarkCommand(index);
             } catch (NumberFormatException e) {
                 return new InvalidCommand("Oops! Task number must be an integer. Usage: unmark <task number>");
@@ -105,10 +116,10 @@ public class Parser {
         }
 
         if (trimmed.startsWith("delete ")) {
-            String rest = trimmed.substring(7).trim();
+            String rest = trimmed.substring(COMMAND_DELETE_LENGTH).trim();
             try {
                 int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - 1;
+                int index = taskNumber - INDEX_OFFSET;
                 return new DeleteCommand(index);
             } catch (NumberFormatException e) {
                 return new InvalidCommand("Oops! Task number must be an integer. Usage: delete <task number>");

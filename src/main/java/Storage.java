@@ -16,6 +16,21 @@ import java.util.Scanner;
  * identical to earlier levels.
  */
 public class Storage {
+    private static final int MIN_PARTS_FOR_TASK = 3;
+    private static final int MIN_PARTS_FOR_DEADLINE = 4;
+    private static final int MIN_PARTS_FOR_EVENT = 5;
+    private static final int INDEX_TYPE = 0;
+    private static final int INDEX_DONE_FLAG = 1;
+    private static final int INDEX_DESCRIPTION = 2;
+    private static final int INDEX_DEADLINE_DATE = 3;
+    private static final int INDEX_EVENT_FROM = 3;
+    private static final int INDEX_EVENT_TO = 4;
+    private static final String DONE_FLAG = "1";
+    private static final String TYPE_TODO = "T";
+    private static final String TYPE_DEADLINE = "D";
+    private static final String TYPE_EVENT = "E";
+    private static final String DELIMITER = " \\| ";
+    private static final String STORAGE_DELIMITER = " | ";
 
     private final String filePath;
 
@@ -89,30 +104,36 @@ public class Storage {
      * @param line the line to parse
      * @return the parsed Task, or null if parsing fails
      */
+    /**
+     * Parses a single line from the storage file into a Task object.
+     *
+     * @param line the line to parse
+     * @return the parsed Task, or null if parsing fails
+     */
     private Task parseTask(String line) {
         // Expected formats:
         // T | 1 | description
         // D | 0 | description | by
         // E | 1 | description | from | to
-        String[] parts = line.split(" \\| ");
-        if (parts.length < 3) {
+        String[] parts = line.split(DELIMITER);
+        if (parts.length < MIN_PARTS_FOR_TASK) {
             return null;
         }
 
-        String type = parts[0];
-        String doneFlag = parts[1];
-        String description = parts[2];
+        String type = parts[INDEX_TYPE];
+        String doneFlag = parts[INDEX_DONE_FLAG];
+        String description = parts[INDEX_DESCRIPTION];
 
         Task task;
         switch (type) {
-        case "T":
+        case TYPE_TODO:
             task = new Todo(description);
             break;
-        case "D":
-            if (parts.length < 4) {
+        case TYPE_DEADLINE:
+            if (parts.length < MIN_PARTS_FOR_DEADLINE) {
                 return null;
             }
-            String byString = parts[3];
+            String byString = parts[INDEX_DEADLINE_DATE];
             java.time.LocalDate by = DateTimeParser.parseDateFromStorage(byString);
             if (by == null) {
                 // Fallback: try parsing as user input format for backward compatibility
@@ -123,12 +144,12 @@ public class Storage {
             }
             task = new Deadline(description, by);
             break;
-        case "E":
-            if (parts.length < 5) {
+        case TYPE_EVENT:
+            if (parts.length < MIN_PARTS_FOR_EVENT) {
                 return null;
             }
-            String fromString = parts[3];
-            String toString = parts[4];
+            String fromString = parts[INDEX_EVENT_FROM];
+            String toString = parts[INDEX_EVENT_TO];
             java.time.LocalDateTime from = DateTimeParser.parseDateTimeFromStorage(fromString);
             java.time.LocalDateTime to = DateTimeParser.parseDateTimeFromStorage(toString);
             if (from == null || to == null) {
@@ -145,7 +166,7 @@ public class Storage {
             return null;
         }
 
-        if ("1".equals(doneFlag)) {
+        if (DONE_FLAG.equals(doneFlag)) {
             task.markDone();
         }
 
@@ -159,22 +180,22 @@ public class Storage {
      * @return the formatted string representation of the task
      */
     private String formatTask(Task task) {
-        String doneFlag = task.isDone() ? "1" : "0";
+        String doneFlag = task.isDone() ? DONE_FLAG : "0";
 
         if (task instanceof Todo) {
-            return String.join(" | ", "T", doneFlag, task.getDescription());
+            return String.join(STORAGE_DELIMITER, TYPE_TODO, doneFlag, task.getDescription());
         } else if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
             String byStorage = DateTimeParser.formatDateForStorage(d.getBy());
-            return String.join(" | ", "D", doneFlag, d.getDescription(), byStorage);
+            return String.join(STORAGE_DELIMITER, TYPE_DEADLINE, doneFlag, d.getDescription(), byStorage);
         } else if (task instanceof Event) {
             Event e = (Event) task;
             String fromStorage = DateTimeParser.formatDateTimeForStorage(e.getFrom());
             String toStorage = DateTimeParser.formatDateTimeForStorage(e.getTo());
-            return String.join(" | ", "E", doneFlag, e.getDescription(), fromStorage, toStorage);
+            return String.join(STORAGE_DELIMITER, TYPE_EVENT, doneFlag, e.getDescription(), fromStorage, toStorage);
         } else {
             // Fallback: store as a generic todo-like task.
-            return String.join(" | ", "T", doneFlag, task.getDescription());
+            return String.join(STORAGE_DELIMITER, TYPE_TODO, doneFlag, task.getDescription());
         }
     }
 }
