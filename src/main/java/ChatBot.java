@@ -92,8 +92,17 @@ public class ChatBot {
             if (input.startsWith("deadline ")) {
                 String rest = input.substring(9).trim();
                 String[] parts = rest.split(" /by ", 2);
+                if (parts.length < 2) {
+                    System.out.println("Oops! Please use the format: deadline <description> /by <date>");
+                    continue;
+                }
                 String desc = parts[0].trim();
-                String by = parts[1].trim();
+                String byString = parts[1].trim();
+                java.time.LocalDate by = DateTimeParser.parseDate(byString);
+                if (by == null) {
+                    System.out.println("Oops! Invalid date format. Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+                    continue;
+                }
                 tasks.add(new Deadline(desc, by));
                 System.out.println("Added: " + tasks.get(tasks.size() - 1));
                 storage.save(tasks);
@@ -103,10 +112,24 @@ public class ChatBot {
             if (input.startsWith("event ")) {
                 String rest = input.substring(6).trim();
                 String[] p1 = rest.split(" /from ", 2);
+                if (p1.length < 2) {
+                    System.out.println("Oops! Please use the format: event <description> /from <date-time> /to <date-time>");
+                    continue;
+                }
                 String desc = p1[0].trim();
                 String[] p2 = p1[1].split(" /to ", 2);
-                String from = p2[0].trim();
-                String to = p2[1].trim();
+                if (p2.length < 2) {
+                    System.out.println("Oops! Please use the format: event <description> /from <date-time> /to <date-time>");
+                    continue;
+                }
+                String fromString = p2[0].trim();
+                String toString = p2[1].trim();
+                java.time.LocalDateTime from = DateTimeParser.parseDateTime(fromString);
+                java.time.LocalDateTime to = DateTimeParser.parseDateTime(toString);
+                if (from == null || to == null) {
+                    System.out.println("Oops! Invalid date-time format. Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
+                    continue;
+                }
                 tasks.add(new Event(desc, from, to));
                 System.out.println("Added: " + tasks.get(tasks.size() - 1));
                 storage.save(tasks);

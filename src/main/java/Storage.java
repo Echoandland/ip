@@ -99,15 +99,33 @@ public class Storage {
             if (parts.length < 4) {
                 return null;
             }
-            String by = parts[3];
+            String byString = parts[3];
+            java.time.LocalDate by = DateTimeParser.parseDateFromStorage(byString);
+            if (by == null) {
+                // Fallback: try parsing as user input format for backward compatibility
+                by = DateTimeParser.parseDate(byString);
+            }
+            if (by == null) {
+                return null;
+            }
             task = new Deadline(description, by);
             break;
         case "E":
             if (parts.length < 5) {
                 return null;
             }
-            String from = parts[3];
-            String to = parts[4];
+            String fromString = parts[3];
+            String toString = parts[4];
+            java.time.LocalDateTime from = DateTimeParser.parseDateTimeFromStorage(fromString);
+            java.time.LocalDateTime to = DateTimeParser.parseDateTimeFromStorage(toString);
+            if (from == null || to == null) {
+                // Fallback: try parsing as user input format for backward compatibility
+                from = DateTimeParser.parseDateTime(fromString);
+                to = DateTimeParser.parseDateTime(toString);
+            }
+            if (from == null || to == null) {
+                return null;
+            }
             task = new Event(description, from, to);
             break;
         default:
@@ -128,10 +146,13 @@ public class Storage {
             return String.join(" | ", "T", doneFlag, task.getDescription());
         } else if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
-            return String.join(" | ", "D", doneFlag, d.getDescription(), d.getBy());
+            String byStorage = DateTimeParser.formatDateForStorage(d.getBy());
+            return String.join(" | ", "D", doneFlag, d.getDescription(), byStorage);
         } else if (task instanceof Event) {
             Event e = (Event) task;
-            return String.join(" | ", "E", doneFlag, e.getDescription(), e.getFrom(), e.getTo());
+            String fromStorage = DateTimeParser.formatDateTimeForStorage(e.getFrom());
+            String toStorage = DateTimeParser.formatDateTimeForStorage(e.getTo());
+            return String.join(" | ", "E", doneFlag, e.getDescription(), fromStorage, toStorage);
         } else {
             // Fallback: store as a generic todo-like task.
             return String.join(" | ", "T", doneFlag, task.getDescription());
