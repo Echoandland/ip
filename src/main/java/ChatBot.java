@@ -10,15 +10,17 @@ public class ChatBot {
         System.out.println("Hello from\n" + logo);
         System.out.println("Hello! I'm ChatBot");
         System.out.println("What can I do for you?");
-
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+
+        Storage storage = new Storage("data/duke.txt");
+        ArrayList<Task> tasks = storage.load();
         
         while (true) {
 
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("bye")) {
+                storage.save(tasks);
                 System.out.println("Bye. Hope to see you again soon!");
                 break;
             }
@@ -28,6 +30,7 @@ public class ChatBot {
                 tasks.get(index).markDone();
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + tasks.get(index));
+                storage.save(tasks);
                 continue;
             }
 
@@ -36,6 +39,7 @@ public class ChatBot {
                 tasks.get(index).unmarkDone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + tasks.get(index));
+                storage.save(tasks);
                 continue;
             }
             if (input.startsWith("mark")) {
@@ -62,6 +66,7 @@ public class ChatBot {
                 tasks.get(index).markDone();
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + tasks.get(index));
+                storage.save(tasks);
                 continue;
             }
 
@@ -80,6 +85,7 @@ public class ChatBot {
                 String desc = input.substring(5).trim();
                 tasks.add(new Todo(desc));
                 System.out.println("Added: " + tasks.get(tasks.size() - 1));
+                storage.save(tasks);
                 continue;
             }
 
@@ -90,6 +96,7 @@ public class ChatBot {
                 String by = parts[1].trim();
                 tasks.add(new Deadline(desc, by));
                 System.out.println("Added: " + tasks.get(tasks.size() - 1));
+                storage.save(tasks);
                 continue;
             }
 
@@ -102,6 +109,7 @@ public class ChatBot {
                 String to = p2[1].trim();
                 tasks.add(new Event(desc, from, to));
                 System.out.println("Added: " + tasks.get(tasks.size() - 1));
+                storage.save(tasks);
                 continue;
             }
             if (input.startsWith("delete ")) {
@@ -110,6 +118,7 @@ public class ChatBot {
                 System.out.println("Noted. I've removed this task:");
                 System.out.println("  " + removed);
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                storage.save(tasks);
                 continue;
             }
 
@@ -117,9 +126,11 @@ public class ChatBot {
             // fallback：暂时当 todo（可选）
             tasks.add(new Todo(input));
             System.out.println("Added: " + tasks.get(tasks.size() - 1));
+            storage.save(tasks);
 
 
             if (input.trim().equalsIgnoreCase("bye")) {
+                storage.save(tasks);
                 System.out.println("Bye. Hope to see you again soon!");
                 break;
             }
@@ -128,4 +139,5 @@ public class ChatBot {
         }
         scanner.close();
     }
+    
 }
