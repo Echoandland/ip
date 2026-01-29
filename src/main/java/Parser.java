@@ -13,6 +13,7 @@ public class Parser {
     private static final int COMMAND_MARK_LENGTH = 5;
     private static final int COMMAND_UNMARK_LENGTH = 7;
     private static final int COMMAND_DELETE_LENGTH = 7;
+    private static final int COMMAND_FIND_LENGTH = 5;
     private static final int MIN_PARTS_FOR_DEADLINE = 4;
     private static final int MIN_PARTS_FOR_EVENT = 5;
     private static final int MIN_PARTS_FOR_TASK = 3;
@@ -33,6 +34,14 @@ public class Parser {
 
         if (trimmed.equalsIgnoreCase("list")) {
             return new ListCommand();
+        }
+
+        if (trimmed.startsWith("find ")) {
+            String keyword = trimmed.substring(COMMAND_FIND_LENGTH).trim();
+            if (keyword.isEmpty()) {
+                return new InvalidCommand("Oops! Please specify a keyword to search for. Usage: find <keyword>");
+            }
+            return new FindCommand(keyword);
         }
 
         if (trimmed.startsWith("todo ")) {
