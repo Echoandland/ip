@@ -73,9 +73,12 @@ public class Main extends Application {
                 observable -> scrollPane.setVvalue(1.0)
         );
 
-        // Show initial greeting
+        // Show initial greeting using varargs to compose multiple lines
         dialogContainer.getChildren().add(
-                DialogBox.getChatBotDialog("Hello! I'm ChatBot.\nWhat can I do for you?")
+                DialogBox.getChatBotDialog(
+                        "Hello! I'm ChatBot.",
+                        "What can I do for you?"
+                )
         );
 
         // Event handlers for user input
