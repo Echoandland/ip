@@ -1,6 +1,8 @@
 package chatbot;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents a command to list all tasks.
@@ -8,20 +10,15 @@ import java.util.ArrayList;
 public class ListCommand extends Command {
     private static final int DISPLAY_INDEX_OFFSET = 1;
     private static final String TASK_SEPARATOR = ". ";
-    private static final String NEWLINE = "\n";
+    private static final String EMPTY_LIST_MESSAGE = "No tasks yet.";
 
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
         if (tasks.isEmpty()) {
-            return "No tasks yet.";
+            return EMPTY_LIST_MESSAGE;
         }
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            result.append(i + DISPLAY_INDEX_OFFSET).append(TASK_SEPARATOR).append(tasks.get(i));
-            if (i < tasks.size() - DISPLAY_INDEX_OFFSET) {
-                result.append(NEWLINE);
-            }
-        }
-        return result.toString();
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + DISPLAY_INDEX_OFFSET) + TASK_SEPARATOR + tasks.get(i))
+                .collect(Collectors.joining("\n"));
     }
 }

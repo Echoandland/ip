@@ -1,6 +1,9 @@
 package chatbot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents a command to find tasks matching a keyword.
@@ -8,7 +11,7 @@ import java.util.ArrayList;
 public class FindCommand extends Command {
     private static final String EMPTY_RESULT_MESSAGE = "No matching tasks found.";
     private static final String TASK_SEPARATOR = ". ";
-    private static final String NEWLINE = "\n";
+    private static final String HEADER = "Here are the matching tasks in your list:";
 
     private final String keyword;
 
@@ -30,23 +33,18 @@ public class FindCommand extends Command {
      */
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
-        ArrayList<Task> matchingTasks = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
-                matchingTasks.add(task);
-            }
-        }
+        String lowerKeyword = keyword.toLowerCase();
+        List<Task> matchingTasks = tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase().contains(lowerKeyword))
+                .collect(Collectors.toList());
 
         if (matchingTasks.isEmpty()) {
             return EMPTY_RESULT_MESSAGE;
         }
 
-        StringBuilder result = new StringBuilder();
-        result.append("Here are the matching tasks in your list:");
-        for (int i = 0; i < matchingTasks.size(); i++) {
-            result.append(NEWLINE);
-            result.append(i + 1).append(TASK_SEPARATOR).append(matchingTasks.get(i));
-        }
-        return result.toString();
+        String numberedList = IntStream.range(0, matchingTasks.size())
+                .mapToObj(i -> (i + 1) + TASK_SEPARATOR + matchingTasks.get(i))
+                .collect(Collectors.joining("\n"));
+        return HEADER + "\n" + numberedList;
     }
 }
