@@ -26,6 +26,7 @@ public class DeleteCommand extends Command {
      */
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
+        assert tasks != null && storage != null : "tasks and storage must not be null";
         if (index < 0 || index >= tasks.size()) {
             return "Oops! That task number is out of range.";
         }
