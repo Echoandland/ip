@@ -70,19 +70,19 @@ public class Parser {
 
         if (trimmed.startsWith("event ")) {
             String rest = trimmed.substring(COMMAND_EVENT_LENGTH).trim();
-            String[] p1 = rest.split(" /from ", 2);
-            if (p1.length < 2) {
+            String[] descriptionAndTimes = rest.split(" /from ", 2);
+            if (descriptionAndTimes.length < 2) {
                 return new InvalidCommand("Oops! Please use the format: "
                         + "event <description> /from <date-time> /to <date-time>");
             }
-            String desc = p1[0].trim();
-            String[] p2 = p1[1].split(" /to ", 2);
-            if (p2.length < 2) {
+            String desc = descriptionAndTimes[0].trim();
+            String[] fromToParts = descriptionAndTimes[1].split(" /to ", 2);
+            if (fromToParts.length < 2) {
                 return new InvalidCommand("Oops! Please use the format: "
                         + "event <description> /from <date-time> /to <date-time>");
             }
-            String fromString = p2[0].trim();
-            String toString = p2[1].trim();
+            String fromString = fromToParts[0].trim();
+            String toString = fromToParts[1].trim();
             LocalDateTime from = DateTimeParser.parseDateTime(fromString);
             LocalDateTime to = DateTimeParser.parseDateTime(toString);
             if (from == null || to == null) {
@@ -94,13 +94,11 @@ public class Parser {
 
         if (trimmed.startsWith("mark ")) {
             String rest = trimmed.substring(COMMAND_MARK_LENGTH).trim();
-            try {
-                int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - INDEX_OFFSET;
+            Integer index = parseTaskIndex(rest);
+            if (index != null) {
                 return new MarkCommand(index);
-            } catch (NumberFormatException e) {
-                return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
             }
+            return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
         }
 
         if (trimmed.startsWith("mark")) {
@@ -108,35 +106,29 @@ public class Parser {
             if (parts.length < 2) {
                 return new InvalidCommand("Oops! Please specify which task to mark. Usage: mark <task number>");
             }
-            try {
-                int taskNumber = Integer.parseInt(parts[1]);
-                int index = taskNumber - INDEX_OFFSET;
+            Integer index = parseTaskIndex(parts[1]);
+            if (index != null) {
                 return new MarkCommand(index);
-            } catch (NumberFormatException e) {
-                return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
             }
+            return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
         }
 
         if (trimmed.startsWith("unmark ")) {
             String rest = trimmed.substring(COMMAND_UNMARK_LENGTH).trim();
-            try {
-                int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - INDEX_OFFSET;
+            Integer index = parseTaskIndex(rest);
+            if (index != null) {
                 return new UnmarkCommand(index);
-            } catch (NumberFormatException e) {
-                return new InvalidCommand("Oops! Task number must be an integer. Usage: unmark <task number>");
             }
+            return new InvalidCommand("Oops! Task number must be an integer. Usage: unmark <task number>");
         }
 
         if (trimmed.startsWith("delete ")) {
             String rest = trimmed.substring(COMMAND_DELETE_LENGTH).trim();
-            try {
-                int taskNumber = Integer.parseInt(rest);
-                int index = taskNumber - INDEX_OFFSET;
+            Integer index = parseTaskIndex(rest);
+            if (index != null) {
                 return new DeleteCommand(index);
-            } catch (NumberFormatException e) {
-                return new InvalidCommand("Oops! Task number must be an integer. Usage: delete <task number>");
             }
+            return new InvalidCommand("Oops! Task number must be an integer. Usage: delete <task number>");
         }
 
         // Fallback: treat as todo (maintains backward compatibility)
@@ -145,5 +137,21 @@ public class Parser {
         }
 
         return new InvalidCommand("I don't understand that command. Please try again.");
+    }
+
+    /**
+     * Parses a task number string into a 0-based index.
+     *
+     * @param taskNumberString the string after the command (e.g. "1" or "2")
+     * @return the 0-based index, or null if the string is not a valid positive integer
+     */
+    private static Integer parseTaskIndex(String taskNumberString) {
+        try {
+            int taskNumber = Integer.parseInt(taskNumberString.trim());
+            int index = taskNumber - INDEX_OFFSET;
+            return index >= 0 ? index : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

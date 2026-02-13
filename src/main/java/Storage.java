@@ -26,6 +26,7 @@ public class Storage {
     private static final int INDEX_EVENT_FROM = 3;
     private static final int INDEX_EVENT_TO = 4;
     private static final String DONE_FLAG = "1";
+    private static final String UNDONE_FLAG = "0";
     private static final String TYPE_TODO = "T";
     private static final String TYPE_DEADLINE = "D";
     private static final String TYPE_EVENT = "E";
@@ -174,7 +175,7 @@ public class Storage {
      * @return the formatted string representation of the task
      */
     private String formatTask(Task task) {
-        String doneFlag = task.isDone() ? DONE_FLAG : "0";
+        String doneFlag = task.isDone() ? DONE_FLAG : UNDONE_FLAG;
 
         if (task instanceof Todo) {
             return String.join(STORAGE_DELIMITER, TYPE_TODO, doneFlag, task.getDescription());
