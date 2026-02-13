@@ -33,6 +33,7 @@ public class FindCommand extends Command {
      */
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
+        assert tasks != null && storage != null : "tasks and storage must not be null";
         String lowerKeyword = keyword.toLowerCase();
         List<Task> matchingTasks = tasks.stream()
                 .filter(task -> task.getDescription().toLowerCase().contains(lowerKeyword))
