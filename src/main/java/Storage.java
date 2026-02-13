@@ -19,17 +19,21 @@ public class Storage {
     private static final int MIN_PARTS_FOR_TASK = 3;
     private static final int MIN_PARTS_FOR_DEADLINE = 4;
     private static final int MIN_PARTS_FOR_EVENT = 5;
+    private static final int MIN_PARTS_FOR_DOWITHIN = 5;
     private static final int INDEX_TYPE = 0;
     private static final int INDEX_DONE_FLAG = 1;
     private static final int INDEX_DESCRIPTION = 2;
     private static final int INDEX_DEADLINE_DATE = 3;
     private static final int INDEX_EVENT_FROM = 3;
     private static final int INDEX_EVENT_TO = 4;
+    private static final int INDEX_DOWITHIN_FROM = 3;
+    private static final int INDEX_DOWITHIN_TO = 4;
     private static final String DONE_FLAG = "1";
     private static final String UNDONE_FLAG = "0";
     private static final String TYPE_TODO = "T";
     private static final String TYPE_DEADLINE = "D";
     private static final String TYPE_EVENT = "E";
+    private static final String TYPE_DOWITHIN = "P";
     private static final String DELIMITER = " \\| ";
     private static final String STORAGE_DELIMITER = " | ";
 
@@ -158,6 +162,24 @@ public class Storage {
             }
             task = new Event(description, from, to);
             break;
+        case TYPE_DOWITHIN:
+            if (parts.length < MIN_PARTS_FOR_DOWITHIN) {
+                return null;
+            }
+            String doWithinFromString = parts[INDEX_DOWITHIN_FROM];
+            String doWithinToString = parts[INDEX_DOWITHIN_TO];
+            java.time.LocalDate doWithinFrom = DateTimeParser.parseDateFromStorage(doWithinFromString);
+            java.time.LocalDate doWithinTo = DateTimeParser.parseDateFromStorage(doWithinToString);
+            if (doWithinFrom == null || doWithinTo == null) {
+                // Fallback: try parsing as user input format for backward compatibility
+                doWithinFrom = DateTimeParser.parseDate(doWithinFromString);
+                doWithinTo = DateTimeParser.parseDate(doWithinToString);
+            }
+            if (doWithinFrom == null || doWithinTo == null) {
+                return null;
+            }
+            task = new DoWithinTask(description, doWithinFrom, doWithinTo);
+            break;
         default:
             return null;
         }
@@ -189,6 +211,11 @@ public class Storage {
             String fromStorage = DateTimeParser.formatDateTimeForStorage(e.getFrom());
             String toStorage = DateTimeParser.formatDateTimeForStorage(e.getTo());
             return String.join(STORAGE_DELIMITER, TYPE_EVENT, doneFlag, e.getDescription(), fromStorage, toStorage);
+        } else if (task instanceof DoWithinTask) {
+            DoWithinTask p = (DoWithinTask) task;
+            String fromStorage = DateTimeParser.formatDateForStorage(p.getFrom());
+            String toStorage = DateTimeParser.formatDateForStorage(p.getTo());
+            return String.join(STORAGE_DELIMITER, TYPE_DOWITHIN, doneFlag, p.getDescription(), fromStorage, toStorage);
         } else {
             // Fallback: store as a generic todo-like task.
             return String.join(STORAGE_DELIMITER, TYPE_TODO, doneFlag, task.getDescription());

@@ -10,6 +10,7 @@ public class Parser {
     private static final int COMMAND_TODO_LENGTH = 5;
     private static final int COMMAND_DEADLINE_LENGTH = 9;
     private static final int COMMAND_EVENT_LENGTH = 6;
+    private static final int COMMAND_DOWITHIN_LENGTH = 9;
     private static final int COMMAND_MARK_LENGTH = 5;
     private static final int COMMAND_UNMARK_LENGTH = 7;
     private static final int COMMAND_DELETE_LENGTH = 7;
@@ -91,6 +92,30 @@ public class Parser {
                         + "Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
             }
             return new EventCommand(desc, from, to);
+        }
+
+        if (trimmed.startsWith("dowithin ")) {
+            String rest = trimmed.substring(COMMAND_DOWITHIN_LENGTH).trim();
+            String[] descriptionAndDates = rest.split(" /from ", 2);
+            if (descriptionAndDates.length < 2) {
+                return new InvalidCommand("Oops! Please use the format: "
+                        + "dowithin <description> /from <date> /to <date>");
+            }
+            String desc = descriptionAndDates[0].trim();
+            String[] fromToParts = descriptionAndDates[1].split(" /to ", 2);
+            if (fromToParts.length < 2) {
+                return new InvalidCommand("Oops! Please use the format: "
+                        + "dowithin <description> /from <date> /to <date>");
+            }
+            String fromString = fromToParts[0].trim();
+            String toString = fromToParts[1].trim();
+            LocalDate from = DateTimeParser.parseDate(fromString);
+            LocalDate to = DateTimeParser.parseDate(toString);
+            if (from == null || to == null) {
+                return new InvalidCommand("Oops! Invalid date format. "
+                        + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+            }
+            return new DoWithinCommand(desc, from, to);
         }
 
         if (trimmed.startsWith("mark ")) {
