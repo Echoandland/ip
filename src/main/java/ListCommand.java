@@ -13,6 +13,7 @@ public class ListCommand extends Command {
 
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
+        assert tasks != null && storage != null : "tasks and storage must not be null";
         if (tasks.isEmpty()) {
             return EMPTY_LIST_MESSAGE;
         }

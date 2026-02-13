@@ -26,6 +26,7 @@ public class Parser {
      * @return the Command object corresponding to the input
      */
     public static Command parse(String input) {
+        assert input != null : "input must not be null";
         String trimmed = input.trim();
 
         if (trimmed.equalsIgnoreCase("bye")) {
