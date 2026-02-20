@@ -1,5 +1,4 @@
 import chatbot.ChatBot;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
