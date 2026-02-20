@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 public class ListCommand extends Command {
     private static final int DISPLAY_INDEX_OFFSET = 1;
     private static final String TASK_SEPARATOR = ". ";
-    private static final String EMPTY_LIST_MESSAGE = "No tasks yet.";
+    private static final String EMPTY_LIST_MESSAGE = "Your list is empty — time to add something! ✨";
 
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {

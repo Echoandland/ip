@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Represents a command to add a DoWithinTask (a task to be done within a period).
  */
 public class DoWithinCommand extends Command {
-    private static final String SUCCESS_PREFIX = "Got it. I've added this task:\n  ";
+    private static final String SUCCESS_PREFIX = "Done! I've added this task:\n  ";
     private static final String TASK_COUNT_FORMAT = "\nNow you have %d tasks in the list.";
 
     private final String description;

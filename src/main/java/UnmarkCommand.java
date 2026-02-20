@@ -28,7 +28,7 @@ public class UnmarkCommand extends Command {
     public String execute(ArrayList<Task> tasks, Storage storage) {
         assert tasks != null && storage != null : "tasks and storage must not be null";
         if (index < 0 || index >= tasks.size()) {
-            return "Oops! That task number is out of range.";
+            return "That task number doesn't exist. Use 'list' to see your tasks.";
         }
         tasks.get(index).unmarkDone();
         storage.save(tasks);

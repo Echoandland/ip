@@ -29,6 +29,6 @@ public class TodoCommand extends Command {
         Task task = new Todo(description);
         tasks.add(task);
         storage.save(tasks);
-        return "Added: " + task;
+        return "Got it! I've added:\n  " + task;
     }
 }

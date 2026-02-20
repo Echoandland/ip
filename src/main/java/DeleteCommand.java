@@ -28,11 +28,11 @@ public class DeleteCommand extends Command {
     public String execute(ArrayList<Task> tasks, Storage storage) {
         assert tasks != null && storage != null : "tasks and storage must not be null";
         if (index < 0 || index >= tasks.size()) {
-            return "Oops! That task number is out of range.";
+            return "That task number doesn't exist. Use 'list' to see your tasks.";
         }
         Task removed = tasks.remove(index);
         storage.save(tasks);
-        return "Noted. I've removed this task:\n  " + removed
-                + "\nNow you have " + tasks.size() + " tasks in the list.";
+        return "Removed! 🗑️\n  " + removed
+                + "\nYou have " + tasks.size() + " task(s) left.";
     }
 }

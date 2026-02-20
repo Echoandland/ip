@@ -9,7 +9,7 @@ public class ByeCommand extends Command {
     @Override
     public String execute(ArrayList<Task> tasks, Storage storage) {
         storage.save(tasks);
-        return "Bye. Hope to see you again soon!";
+        return "See you later! 👋 Take care and stay productive!";
     }
 
     @Override

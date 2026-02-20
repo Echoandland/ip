@@ -123,6 +123,9 @@ public class Parser {
             return new InvalidCommand("Oops! Invalid date-time format. "
                     + "Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
         }
+        if (from.isAfter(to)) {
+            return new InvalidCommand("The start time must be before the end time.");
+        }
         return new EventCommand(desc, from, to);
     }
 
@@ -144,6 +147,9 @@ public class Parser {
         if (from == null || to == null) {
             return new InvalidCommand("Oops! Invalid date format. "
                     + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+        }
+        if (from.isAfter(to)) {
+            return new InvalidCommand("The start date must be before or equal to the end date.");
         }
         return new DoWithinCommand(desc, from, to);
     }

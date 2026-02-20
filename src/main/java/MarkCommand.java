@@ -28,10 +28,10 @@ public class MarkCommand extends Command {
     public String execute(ArrayList<Task> tasks, Storage storage) {
         assert tasks != null && storage != null : "tasks and storage must not be null";
         if (index < 0 || index >= tasks.size()) {
-            return "Oops! That task number is out of range.";
+            return "Hmm, that task number doesn't exist. Try 'list' to see your tasks!";
         }
         tasks.get(index).markDone();
         storage.save(tasks);
-        return "Nice! I've marked this task as done:\n  " + tasks.get(index);
+        return "Awesome! One less thing to worry about ✓\n  " + tasks.get(index);
     }
 }

@@ -68,10 +68,16 @@ public class Main extends Application {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setVvalue(1.0);
         scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #FAFAFA; -fx-background-color: transparent;");
+        dialogContainer.setStyle("-fx-background-color: #FAFAFA;");
         dialogContainer.setFillWidth(true);
         dialogContainer.setAlignment(Pos.TOP_LEFT);
+        dialogContainer.setSpacing(8);
         userInput.setPrefWidth(325.0);
+        userInput.setStyle("-fx-font-size: 14px; -fx-padding: 8 12;");
         sendButton.setPrefWidth(55.0);
+        sendButton.setStyle("-fx-font-size: 13px; -fx-background-color: #2196F3; "
+                + "-fx-text-fill: white; -fx-background-radius: 6;");
 
         AnchorPane.setTopAnchor(scrollPane, 1.0);
         AnchorPane.setBottomAnchor(scrollPane, 45.0);
@@ -87,7 +93,8 @@ public class Main extends Application {
 
     private void showGreeting() {
         dialogContainer.getChildren().add(
-                DialogBox.getChatBotDialog("Hello! I'm ChatBot.", "What can I do for you?"));
+                DialogBox.getChatBotDialog("Hey there! 👋 I'm ChatBot, your friendly task buddy.",
+                        "Tell me what you need — I'm here to help!"));
     }
 
     private void setupInputHandlers() {
@@ -103,7 +110,12 @@ public class Main extends Application {
         if (input == null || input.trim().isEmpty()) {
             return;
         }
-        String response = chatBot.getResponse(input);
+        String response;
+        try {
+            response = chatBot.getResponse(input);
+        } catch (Exception e) {
+            response = "Oops! Something went wrong. Please try again or use 'list' to see your tasks.";
+        }
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input),
