@@ -34,6 +34,14 @@ public class ChatBot {
     }
 
     /**
+     * Returns true if the given input corresponds to an exit command (e.g. bye).
+     */
+    public boolean isExitCommand(String input) {
+        Command command = Parser.parse(input);
+        return command.isExit();
+    }
+
+    /**
      * Runs the ChatBot application.
      */
     public void run() {

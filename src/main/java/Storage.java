@@ -106,89 +106,85 @@ public class Storage {
 
     /**
      * Parses a single line from the storage file into a Task object.
+     * Expected formats: T|1|desc ; D|0|desc|by ; E|1|desc|from|to ; P|0|desc|from|to
      *
      * @param line the line to parse
      * @return the parsed Task, or null if parsing fails
      */
     private Task parseTask(String line) {
-        // Expected formats:
-        // T | 1 | description
-        // D | 0 | description | by
-        // E | 1 | description | from | to
         String[] parts = line.split(DELIMITER);
         if (parts.length < MIN_PARTS_FOR_TASK) {
             return null;
         }
-
         String type = parts[INDEX_TYPE];
         String doneFlag = parts[INDEX_DONE_FLAG];
         String description = parts[INDEX_DESCRIPTION];
 
-        Task task;
+        Task task = parseTaskByType(type, parts, description);
+        if (task != null && DONE_FLAG.equals(doneFlag)) {
+            task.markDone();
+        }
+        return task;
+    }
+
+    /**
+     * Parses a task from storage parts by type (T/D/E/P).
+     */
+    private Task parseTaskByType(String type, String[] parts, String description) {
         switch (type) {
         case TYPE_TODO:
-            task = new Todo(description);
-            break;
+            return new Todo(description);
         case TYPE_DEADLINE:
-            if (parts.length < MIN_PARTS_FOR_DEADLINE) {
-                return null;
-            }
-            String byString = parts[INDEX_DEADLINE_DATE];
-            java.time.LocalDate by = DateTimeParser.parseDateFromStorage(byString);
-            if (by == null) {
-                // Fallback: try parsing as user input format for backward compatibility
-                by = DateTimeParser.parseDate(byString);
-            }
-            if (by == null) {
-                return null;
-            }
-            task = new Deadline(description, by);
-            break;
+            return parseDeadlineFromParts(parts, description);
         case TYPE_EVENT:
-            if (parts.length < MIN_PARTS_FOR_EVENT) {
-                return null;
-            }
-            String fromString = parts[INDEX_EVENT_FROM];
-            String toString = parts[INDEX_EVENT_TO];
-            java.time.LocalDateTime from = DateTimeParser.parseDateTimeFromStorage(fromString);
-            java.time.LocalDateTime to = DateTimeParser.parseDateTimeFromStorage(toString);
-            if (from == null || to == null) {
-                // Fallback: try parsing as user input format for backward compatibility
-                from = DateTimeParser.parseDateTime(fromString);
-                to = DateTimeParser.parseDateTime(toString);
-            }
-            if (from == null || to == null) {
-                return null;
-            }
-            task = new Event(description, from, to);
-            break;
+            return parseEventFromParts(parts, description);
         case TYPE_DOWITHIN:
-            if (parts.length < MIN_PARTS_FOR_DOWITHIN) {
-                return null;
-            }
-            String doWithinFromString = parts[INDEX_DOWITHIN_FROM];
-            String doWithinToString = parts[INDEX_DOWITHIN_TO];
-            java.time.LocalDate doWithinFrom = DateTimeParser.parseDateFromStorage(doWithinFromString);
-            java.time.LocalDate doWithinTo = DateTimeParser.parseDateFromStorage(doWithinToString);
-            if (doWithinFrom == null || doWithinTo == null) {
-                // Fallback: try parsing as user input format for backward compatibility
-                doWithinFrom = DateTimeParser.parseDate(doWithinFromString);
-                doWithinTo = DateTimeParser.parseDate(doWithinToString);
-            }
-            if (doWithinFrom == null || doWithinTo == null) {
-                return null;
-            }
-            task = new DoWithinTask(description, doWithinFrom, doWithinTo);
-            break;
+            return parseDoWithinFromParts(parts, description);
         default:
             return null;
         }
+    }
 
-        if (DONE_FLAG.equals(doneFlag)) {
-            task.markDone();
+    private Task parseDeadlineFromParts(String[] parts, String description) {
+        if (parts.length < MIN_PARTS_FOR_DEADLINE) {
+            return null;
         }
+        String byString = parts[INDEX_DEADLINE_DATE];
+        java.time.LocalDate by = DateTimeParser.parseDateFromStorage(byString);
+        if (by == null) {
+            by = DateTimeParser.parseDate(byString);
+        }
+        return by != null ? new Deadline(description, by) : null;
+    }
 
-        return task;
+    private Task parseEventFromParts(String[] parts, String description) {
+        if (parts.length < MIN_PARTS_FOR_EVENT) {
+            return null;
+        }
+        String fromString = parts[INDEX_EVENT_FROM];
+        String toString = parts[INDEX_EVENT_TO];
+        java.time.LocalDateTime from = DateTimeParser.parseDateTimeFromStorage(fromString);
+        java.time.LocalDateTime to = DateTimeParser.parseDateTimeFromStorage(toString);
+        if (from == null || to == null) {
+            from = DateTimeParser.parseDateTime(fromString);
+            to = DateTimeParser.parseDateTime(toString);
+        }
+        return (from != null && to != null) ? new Event(description, from, to) : null;
+    }
+
+    private Task parseDoWithinFromParts(String[] parts, String description) {
+        if (parts.length < MIN_PARTS_FOR_DOWITHIN) {
+            return null;
+        }
+        String fromStr = parts[INDEX_DOWITHIN_FROM];
+        String toStr = parts[INDEX_DOWITHIN_TO];
+        java.time.LocalDate from = DateTimeParser.parseDateFromStorage(fromStr);
+        java.time.LocalDate to = DateTimeParser.parseDateFromStorage(toStr);
+        if (from == null || to == null) {
+            from = DateTimeParser.parseDate(fromStr);
+            to = DateTimeParser.parseDate(toStr);
+        }
+        return (from != null && to != null) ? new DoWithinTask(description, from, to) : null;
     }
 
     /**

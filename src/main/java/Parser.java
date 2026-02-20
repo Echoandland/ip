@@ -33,136 +33,143 @@ public class Parser {
         if (trimmed.equalsIgnoreCase("bye")) {
             return new ByeCommand();
         }
-
         if (trimmed.equalsIgnoreCase("list")) {
             return new ListCommand();
         }
-
         if (trimmed.startsWith("find ")) {
-            String keyword = trimmed.substring(COMMAND_FIND_LENGTH).trim();
-            if (keyword.isEmpty()) {
-                return new InvalidCommand("Oops! Please specify a keyword to search for. Usage: find <keyword>");
-            }
-            return new FindCommand(keyword);
+            return parseFind(trimmed);
         }
-
         if (trimmed.startsWith("todo ")) {
-            String desc = trimmed.substring(COMMAND_TODO_LENGTH).trim();
-            if (desc.isEmpty()) {
-                return new InvalidCommand("Oops! Todo description cannot be empty.");
-            }
-            return new TodoCommand(desc);
+            return parseTodo(trimmed);
         }
-
         if (trimmed.startsWith("deadline ")) {
-            String rest = trimmed.substring(COMMAND_DEADLINE_LENGTH).trim();
-            String[] parts = rest.split(" /by ", 2);
-            if (parts.length < 2) {
-                return new InvalidCommand("Oops! Please use the format: deadline <description> /by <date>");
-            }
-            String desc = parts[0].trim();
-            String byString = parts[1].trim();
-            LocalDate by = DateTimeParser.parseDate(byString);
-            if (by == null) {
-                return new InvalidCommand("Oops! Invalid date format. "
-                        + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
-            }
-            return new DeadlineCommand(desc, by);
+            return parseDeadline(trimmed);
         }
-
         if (trimmed.startsWith("event ")) {
-            String rest = trimmed.substring(COMMAND_EVENT_LENGTH).trim();
-            String[] descriptionAndTimes = rest.split(" /from ", 2);
-            if (descriptionAndTimes.length < 2) {
-                return new InvalidCommand("Oops! Please use the format: "
-                        + "event <description> /from <date-time> /to <date-time>");
-            }
-            String desc = descriptionAndTimes[0].trim();
-            String[] fromToParts = descriptionAndTimes[1].split(" /to ", 2);
-            if (fromToParts.length < 2) {
-                return new InvalidCommand("Oops! Please use the format: "
-                        + "event <description> /from <date-time> /to <date-time>");
-            }
-            String fromString = fromToParts[0].trim();
-            String toString = fromToParts[1].trim();
-            LocalDateTime from = DateTimeParser.parseDateTime(fromString);
-            LocalDateTime to = DateTimeParser.parseDateTime(toString);
-            if (from == null || to == null) {
-                return new InvalidCommand("Oops! Invalid date-time format. "
-                        + "Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
-            }
-            return new EventCommand(desc, from, to);
+            return parseEvent(trimmed);
         }
-
         if (trimmed.startsWith("dowithin ")) {
-            String rest = trimmed.substring(COMMAND_DOWITHIN_LENGTH).trim();
-            String[] descriptionAndDates = rest.split(" /from ", 2);
-            if (descriptionAndDates.length < 2) {
-                return new InvalidCommand("Oops! Please use the format: "
-                        + "dowithin <description> /from <date> /to <date>");
-            }
-            String desc = descriptionAndDates[0].trim();
-            String[] fromToParts = descriptionAndDates[1].split(" /to ", 2);
-            if (fromToParts.length < 2) {
-                return new InvalidCommand("Oops! Please use the format: "
-                        + "dowithin <description> /from <date> /to <date>");
-            }
-            String fromString = fromToParts[0].trim();
-            String toString = fromToParts[1].trim();
-            LocalDate from = DateTimeParser.parseDate(fromString);
-            LocalDate to = DateTimeParser.parseDate(toString);
-            if (from == null || to == null) {
-                return new InvalidCommand("Oops! Invalid date format. "
-                        + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
-            }
-            return new DoWithinCommand(desc, from, to);
+            return parseDoWithin(trimmed);
         }
-
         if (trimmed.startsWith("mark ")) {
-            String rest = trimmed.substring(COMMAND_MARK_LENGTH).trim();
-            Integer index = parseTaskIndex(rest);
-            if (index != null) {
-                return new MarkCommand(index);
-            }
-            return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
+            return parseMark(trimmed.substring(COMMAND_MARK_LENGTH).trim());
         }
-
         if (trimmed.startsWith("mark")) {
             String[] parts = trimmed.split("\\s+");
             if (parts.length < 2) {
                 return new InvalidCommand("Oops! Please specify which task to mark. Usage: mark <task number>");
             }
-            Integer index = parseTaskIndex(parts[1]);
-            if (index != null) {
-                return new MarkCommand(index);
-            }
-            return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
+            return parseMark(parts[1]);
         }
-
         if (trimmed.startsWith("unmark ")) {
-            String rest = trimmed.substring(COMMAND_UNMARK_LENGTH).trim();
-            Integer index = parseTaskIndex(rest);
-            if (index != null) {
-                return new UnmarkCommand(index);
-            }
-            return new InvalidCommand("Oops! Task number must be an integer. Usage: unmark <task number>");
+            return parseUnmark(trimmed.substring(COMMAND_UNMARK_LENGTH).trim());
         }
-
         if (trimmed.startsWith("delete ")) {
-            String rest = trimmed.substring(COMMAND_DELETE_LENGTH).trim();
-            Integer index = parseTaskIndex(rest);
-            if (index != null) {
-                return new DeleteCommand(index);
-            }
-            return new InvalidCommand("Oops! Task number must be an integer. Usage: delete <task number>");
+            return parseDelete(trimmed.substring(COMMAND_DELETE_LENGTH).trim());
         }
-
-        // Fallback: treat as todo (maintains backward compatibility)
         if (!trimmed.isEmpty()) {
             return new FallbackTodoCommand(trimmed);
         }
-
         return new InvalidCommand("I don't understand that command. Please try again.");
+    }
+
+    private static Command parseFind(String trimmed) {
+        String keyword = trimmed.substring(COMMAND_FIND_LENGTH).trim();
+        if (keyword.isEmpty()) {
+            return new InvalidCommand("Oops! Please specify a keyword to search for. Usage: find <keyword>");
+        }
+        return new FindCommand(keyword);
+    }
+
+    private static Command parseTodo(String trimmed) {
+        String desc = trimmed.substring(COMMAND_TODO_LENGTH).trim();
+        if (desc.isEmpty()) {
+            return new InvalidCommand("Oops! Todo description cannot be empty.");
+        }
+        return new TodoCommand(desc);
+    }
+
+    private static Command parseDeadline(String trimmed) {
+        String rest = trimmed.substring(COMMAND_DEADLINE_LENGTH).trim();
+        String[] parts = rest.split(" /by ", 2);
+        if (parts.length < 2) {
+            return new InvalidCommand("Oops! Please use the format: deadline <description> /by <date>");
+        }
+        String desc = parts[0].trim();
+        LocalDate by = DateTimeParser.parseDate(parts[1].trim());
+        if (by == null) {
+            return new InvalidCommand("Oops! Invalid date format. "
+                    + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+        }
+        return new DeadlineCommand(desc, by);
+    }
+
+    private static Command parseEvent(String trimmed) {
+        String rest = trimmed.substring(COMMAND_EVENT_LENGTH).trim();
+        String[] descriptionAndTimes = rest.split(" /from ", 2);
+        if (descriptionAndTimes.length < 2) {
+            return new InvalidCommand("Oops! Please use the format: "
+                    + "event <description> /from <date-time> /to <date-time>");
+        }
+        String desc = descriptionAndTimes[0].trim();
+        String[] fromToParts = descriptionAndTimes[1].split(" /to ", 2);
+        if (fromToParts.length < 2) {
+            return new InvalidCommand("Oops! Please use the format: "
+                    + "event <description> /from <date-time> /to <date-time>");
+        }
+        LocalDateTime from = DateTimeParser.parseDateTime(fromToParts[0].trim());
+        LocalDateTime to = DateTimeParser.parseDateTime(fromToParts[1].trim());
+        if (from == null || to == null) {
+            return new InvalidCommand("Oops! Invalid date-time format. "
+                    + "Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
+        }
+        return new EventCommand(desc, from, to);
+    }
+
+    private static Command parseDoWithin(String trimmed) {
+        String rest = trimmed.substring(COMMAND_DOWITHIN_LENGTH).trim();
+        String[] descriptionAndDates = rest.split(" /from ", 2);
+        if (descriptionAndDates.length < 2) {
+            return new InvalidCommand("Oops! Please use the format: "
+                    + "dowithin <description> /from <date> /to <date>");
+        }
+        String desc = descriptionAndDates[0].trim();
+        String[] fromToParts = descriptionAndDates[1].split(" /to ", 2);
+        if (fromToParts.length < 2) {
+            return new InvalidCommand("Oops! Please use the format: "
+                    + "dowithin <description> /from <date> /to <date>");
+        }
+        LocalDate from = DateTimeParser.parseDate(fromToParts[0].trim());
+        LocalDate to = DateTimeParser.parseDate(fromToParts[1].trim());
+        if (from == null || to == null) {
+            return new InvalidCommand("Oops! Invalid date format. "
+                    + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+        }
+        return new DoWithinCommand(desc, from, to);
+    }
+
+    private static Command parseMark(String rest) {
+        Integer index = parseTaskIndex(rest);
+        if (index != null) {
+            return new MarkCommand(index);
+        }
+        return new InvalidCommand("Oops! Task number must be an integer. Usage: mark <task number>");
+    }
+
+    private static Command parseUnmark(String rest) {
+        Integer index = parseTaskIndex(rest);
+        if (index != null) {
+            return new UnmarkCommand(index);
+        }
+        return new InvalidCommand("Oops! Task number must be an integer. Usage: unmark <task number>");
+    }
+
+    private static Command parseDelete(String rest) {
+        Integer index = parseTaskIndex(rest);
+        if (index != null) {
+            return new DeleteCommand(index);
+        }
+        return new InvalidCommand("Oops! Task number must be an integer. Usage: delete <task number>");
     }
 
     /**
