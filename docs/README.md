@@ -10,6 +10,28 @@ ChatBot is a desktop task management application with a chat-style interface. It
 2. Type commands in the input box and press Enter or click Send
 3. Type `bye` to exit
 
+## Command Summary
+
+| Command | Format |
+| --- | --- |
+| Add todo | `todo <description>` |
+| Add deadline | `deadline <description> /by <date>` |
+| Add event | `event <description> /from <date-time> /to <date-time>` |
+| Add do-within | `dowithin <description> /from <date> /to <date>` |
+| List tasks | `list` |
+| Mark task | `mark <task number>` |
+| Unmark task | `unmark <task number>` |
+| Delete task | `delete <task number>` |
+| Find tasks | `find <keyword>` |
+| Exit | `bye` |
+
+## Date and Time Formats
+
+ChatBot accepts the following date and date-time formats:
+
+- Date: `2025-02-20`, `Feb 20 2025`, `20/02/2025`
+- Date-time: `2025-02-20 1400`, `Feb 20 2025 2:00pm`, `20/02/2025 14:00`
+
 ## Features
 
 ### Add a todo task
@@ -28,8 +50,6 @@ todo read book
 Adds a task with a deadline date.
 
 **Format:** `deadline <description> /by <date>`
-
-**Date formats:** `2025-02-20`, `Feb 20 2025`, `20/02/2025`
 
 **Example:**
 ```
