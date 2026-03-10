@@ -15,6 +15,8 @@ public class Parser {
     private static final int COMMAND_UNMARK_LENGTH = 7;
     private static final int COMMAND_DELETE_LENGTH = 7;
     private static final int COMMAND_FIND_LENGTH = 5;
+    private static final String UNKNOWN_COMMAND_MESSAGE =
+            "I don't understand that command. Please use 'help' to see the available commands.";
     private static final int MIN_PARTS_FOR_DEADLINE = 4;
     private static final int MIN_PARTS_FOR_EVENT = 5;
     private static final int MIN_PARTS_FOR_TASK = 3;
@@ -35,6 +37,9 @@ public class Parser {
         }
         if (trimmed.equalsIgnoreCase("list")) {
             return new ListCommand();
+        }
+        if (trimmed.equalsIgnoreCase("help")) {
+            return new HelpCommand();
         }
         if (trimmed.startsWith("find ")) {
             return parseFind(trimmed);
@@ -67,10 +72,7 @@ public class Parser {
         if (trimmed.startsWith("delete ")) {
             return parseDelete(trimmed.substring(COMMAND_DELETE_LENGTH).trim());
         }
-        if (!trimmed.isEmpty()) {
-            return new FallbackTodoCommand(trimmed);
-        }
-        return new InvalidCommand("I don't understand that command. Please try again.");
+        return new InvalidCommand(UNKNOWN_COMMAND_MESSAGE);
     }
 
     private static Command parseFind(String trimmed) {

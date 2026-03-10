@@ -1,6 +1,7 @@
 package chatbot;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,12 @@ public class ParserTest {
     public void testParseList() {
         Command cmd = Parser.parse("list");
         assertTrue(cmd instanceof ListCommand);
+    }
+
+    @Test
+    public void testParseHelp() {
+        Command cmd = Parser.parse("help");
+        assertTrue(cmd instanceof HelpCommand);
     }
 
     @Test
@@ -38,9 +45,11 @@ public class ParserTest {
     }
 
     @Test
-    public void testParseFallbackTodo() {
+    public void testParseUnknownCommand() {
         Command cmd = Parser.parse("some random text");
-        assertTrue(cmd instanceof FallbackTodoCommand);
+        assertTrue(cmd instanceof InvalidCommand);
+        assertEquals("I don't understand that command. Please use 'help' to see the available commands.",
+                cmd.execute(null, null));
     }
 
     @Test

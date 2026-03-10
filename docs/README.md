@@ -18,6 +18,7 @@ ChatBot is a desktop task management application with a chat-style interface. It
 | Add deadline | `deadline <description> /by <date>` |
 | Add event | `event <description> /from <date-time> /to <date-time>` |
 | Add do-within | `dowithin <description> /from <date> /to <date>` |
+| Show help | `help` |
 | List tasks | `list` |
 | Mark task | `mark <task number>` |
 | Unmark task | `unmark <task number>` |
@@ -33,6 +34,12 @@ ChatBot accepts the following date and date-time formats:
 - Date-time: `2025-02-20 1400`, `Feb 20 2025 2:00pm`, `20/02/2025 14:00`
 
 ## Features
+
+### Show available commands
+
+Displays the list of supported commands and their formats.
+
+**Format:** `help`
 
 ### Add a todo task
 
@@ -124,6 +131,6 @@ Your tasks are saved automatically in a `data` folder next to the JAR file. They
 
 ## Tips
 
-- If you enter text that is not a valid command, it will be added as a todo task
+- If you enter a command that ChatBot does not recognize, it will ask you to use `help`
 - Task numbers start from 1 in the list
 - Use `list` first to see task numbers before marking, unmarking, or deleting
