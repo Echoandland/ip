@@ -21,7 +21,7 @@ public class Main extends Application {
     private Button sendButton;
     private Scene scene;
 
-    private final ChatBot chatBot = new ChatBot("data/duke.txt");
+    private final ChatBot chatBot = new ChatBot("data/ChatBot.txt");
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);

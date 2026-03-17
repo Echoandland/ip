@@ -67,6 +67,6 @@ public class ChatBot {
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
-        new ChatBot("data/duke.txt").run();
+        new ChatBot("data/ChatBot.txt").run();
     }
 }
