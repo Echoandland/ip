@@ -3,45 +3,63 @@ package chatbot;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Utility class for parsing and formatting dates and times.
  * Supports multiple input formats commonly used by users.
  */
 public class DateTimeParser {
+    private static final Locale INPUT_LOCALE = Locale.ENGLISH;
 
     // Common date formats
     private static final List<DateTimeFormatter> DATE_FORMATTERS = Arrays.asList(
-        DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-        DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-        DateTimeFormatter.ofPattern("MM/dd/yyyy"),
-        DateTimeFormatter.ofPattern("dd-MM-yyyy"),
-        DateTimeFormatter.ofPattern("MMM dd yyyy"),
-        DateTimeFormatter.ofPattern("MMM d yyyy"),
-        DateTimeFormatter.ofPattern("d MMM yyyy"),
-        DateTimeFormatter.ofPattern("dd MMM yyyy")
+        createFormatter("uuuu-MM-dd"),
+        createFormatter("dd/MM/uuuu"),
+        createFormatter("MM/dd/uuuu"),
+        createFormatter("dd-MM-uuuu"),
+        createFormatter("MMM dd uuuu"),
+        createFormatter("MMM d uuuu"),
+        createFormatter("d MMM uuuu"),
+        createFormatter("dd MMM uuuu")
     );
 
     // Common date-time formats
     private static final List<DateTimeFormatter> DATETIME_FORMATTERS = Arrays.asList(
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
-        DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm"),
-        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
-        DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"),
-        DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm")
+        createFormatter("uuuu-MM-dd HHmm"),
+        createFormatter("uuuu-MM-dd HH:mm"),
+        createFormatter("dd/MM/uuuu HHmm"),
+        createFormatter("dd/MM/uuuu HH:mm"),
+        createFormatter("MMM dd uuuu HHmm"),
+        createFormatter("MMM d uuuu HHmm"),
+        createFormatter("MMM dd uuuu HH:mm"),
+        createFormatter("MMM d uuuu HH:mm"),
+        createFormatter("MMM dd uuuu h:mma"),
+        createFormatter("MMM d uuuu h:mma"),
+        createFormatter("MMM dd uuuu ha"),
+        createFormatter("MMM d uuuu ha")
     );
 
     // Output formatter for dates
     private static final DateTimeFormatter OUTPUT_DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("MMM d yyyy");
+            DateTimeFormatter.ofPattern("MMM d uuuu", Locale.ENGLISH);
 
     // Output formatter for date-times
     private static final DateTimeFormatter OUTPUT_DATETIME_FORMATTER =
-            DateTimeFormatter.ofPattern("MMM d yyyy HHmm");
+            DateTimeFormatter.ofPattern("MMM d uuuu HHmm", Locale.ENGLISH);
+
+    private static DateTimeFormatter createFormatter(String pattern) {
+        return new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern(pattern)
+                .toFormatter(INPUT_LOCALE)
+                .withResolverStyle(ResolverStyle.STRICT);
+    }
 
     /**
      * Parses a date string into a LocalDate.

@@ -6,7 +6,7 @@ ChatBot is a desktop task management application with a chat-style interface. It
 
 ## Quick Start
 
-1. Run the application (double-click the JAR or run `java -jar duke.jar` from a terminal)
+1. Run the application (double-click the JAR or run `java -jar ChatBot.jar` from a terminal)
 2. Type commands in the input box and press Enter or click Send
 3. Type `bye` to exit
 
@@ -28,10 +28,11 @@ ChatBot is a desktop task management application with a chat-style interface. It
 
 ## Date and Time Formats
 
-ChatBot accepts the following date and date-time formats:
+ChatBot accepts the following date and date-time formats. Month names such as `Feb` must be entered in English.
 
 - Date: `2025-02-20`, `Feb 20 2025`, `20/02/2025`
 - Date-time: `2025-02-20 1400`, `Feb 20 2025 2:00pm`, `20/02/2025 14:00`
+- Invalid dates such as `Feb 29 2025` will be rejected unless the date is valid in that year
 
 ## Features
 

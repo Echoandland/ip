@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,7 @@ public class DateTimeParserTest {
     public void testParseDateInvalid() {
         assertNull(DateTimeParser.parseDate("invalid"));
         assertNull(DateTimeParser.parseDate("32/13/2025"));
+        assertNull(DateTimeParser.parseDate("Feb 29 2025"));
     }
 
     @Test
@@ -57,6 +59,24 @@ public class DateTimeParserTest {
     public void testParseDateTime() {
         LocalDateTime result = DateTimeParser.parseDateTime("2025-02-20 1400");
         assertEquals(LocalDateTime.of(2025, 2, 20, 14, 0), result);
+    }
+
+    @Test
+    public void testParseDateTimeEnglishAmPmFormat() {
+        LocalDateTime result = DateTimeParser.parseDateTime("Feb 20 2025 2:00pm");
+        assertEquals(LocalDateTime.of(2025, 2, 20, 14, 0), result);
+    }
+
+    @Test
+    public void testFormatDateUsesEnglishMonthNames() {
+        Locale original = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.CHINESE);
+            LocalDate date = LocalDate.of(2025, 2, 20);
+            assertEquals("Feb 20 2025", DateTimeParser.formatDate(date));
+        } finally {
+            Locale.setDefault(original);
+        }
     }
 
     @Test

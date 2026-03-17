@@ -101,7 +101,8 @@ public class Parser {
         LocalDate by = DateTimeParser.parseDate(parts[1].trim());
         if (by == null) {
             return new InvalidCommand("Oops! Invalid date format. "
-                    + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+                    + "Please use English month names and formats like: "
+                    + "2025-02-01, Feb 1 2025, or 01/02/2025");
         }
         return new DeadlineCommand(desc, by);
     }
@@ -123,7 +124,8 @@ public class Parser {
         LocalDateTime to = DateTimeParser.parseDateTime(fromToParts[1].trim());
         if (from == null || to == null) {
             return new InvalidCommand("Oops! Invalid date-time format. "
-                    + "Please use formats like: 2025-02-01 1400, Feb 1 2025 2pm, or 01/02/2025 14:00");
+                    + "Please use English month names and formats like: "
+                    + "2025-02-01 1400, Feb 1 2025 2:00pm, or 01/02/2025 14:00");
         }
         if (from.isAfter(to)) {
             return new InvalidCommand("The start time must be before the end time.");
@@ -148,7 +150,8 @@ public class Parser {
         LocalDate to = DateTimeParser.parseDate(fromToParts[1].trim());
         if (from == null || to == null) {
             return new InvalidCommand("Oops! Invalid date format. "
-                    + "Please use formats like: 2025-02-01, Feb 1 2025, or 01/02/2025");
+                    + "Please use English month names and formats like: "
+                    + "2025-02-01, Feb 1 2025, or 01/02/2025");
         }
         if (from.isAfter(to)) {
             return new InvalidCommand("The start date must be before or equal to the end date.");
